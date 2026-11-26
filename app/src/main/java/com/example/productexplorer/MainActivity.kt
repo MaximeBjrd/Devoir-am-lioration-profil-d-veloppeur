@@ -22,6 +22,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -44,6 +46,7 @@ class MainActivity : ComponentActivity() {
                     ProfileScreen(
                         developer = sampleDeveloper(),
                         skills = sampleSkills(),
+                        projects = sampleProjects(),
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -64,6 +67,13 @@ data class DeveloperUi(
 data class SkillUi(
     val id: Int,
     val name: String
+)
+
+data class ProjectUi(
+    val id: Int,
+    val title: String,
+    val description: String,
+    val technologies: String
 )
 
 fun sampleDeveloper(): DeveloperUi {
@@ -87,10 +97,34 @@ fun sampleSkills(): List<SkillUi> {
     )
 }
 
+fun sampleProjects(): List<ProjectUi> {
+    return listOf(
+        ProjectUi(
+            id = 1,
+            title = "Product Explorer",
+            description = "Catalogue de produits local avec écran d'accueil, détail et thème clair/sombre.",
+            technologies = "Kotlin, Compose, Material 3"
+        ),
+        ProjectUi(
+            id = 2,
+            title = "Profil développeur",
+            description = "Fiche de profil avec composants réutilisables, callbacks et previews.",
+            technologies = "Kotlin, Compose"
+        ),
+        ProjectUi(
+            id = 3,
+            title = "Application de gestion",
+            description = "Application web développée en alternance.",
+            technologies = "Java, Angular, Git"
+        )
+    )
+}
+
 @Composable
 fun ProfileScreen(
     developer: DeveloperUi,
     skills: List<SkillUi>,
+    projects: List<ProjectUi>,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -103,6 +137,19 @@ fun ProfileScreen(
         }
         item {
             SkillsSection(skills = skills)
+        }
+        item {
+            Text(
+                text = "Projets",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+        }
+        items(
+            items = projects,
+            key = { project -> project.id }
+        ) { project ->
+            ProjectCard(project = project)
         }
     }
 }
@@ -197,13 +244,46 @@ fun SkillsSection(skills: List<SkillUi>, modifier: Modifier = Modifier) {
     }
 }
 
+@Composable
+fun ProjectCard(project: ProjectUi, modifier: Modifier = Modifier) {
+    Card(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 3.dp)
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = project.title,
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+
+            Text(
+                text = project.description,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Text(
+                text = project.technologies,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.secondary
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true, name = "Profil - Light Theme", heightDp = 1100)
 @Composable
 fun ProfileScreenLightPreview() {
     ProductExplorerTheme(darkTheme = false) {
         ProfileScreen(
             developer = sampleDeveloper(),
-            skills = sampleSkills()
+            skills = sampleSkills(),
+            projects = sampleProjects()
         )
     }
 }
