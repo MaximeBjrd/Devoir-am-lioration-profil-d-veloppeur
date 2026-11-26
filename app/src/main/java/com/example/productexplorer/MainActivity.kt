@@ -366,3 +366,16 @@ fun ProfileScreenLightPreview() {
         )
     }
 }
+
+@Preview(showBackground = true, name = "Profil - Dark Theme", heightDp = 1100)
+@Composable
+fun ProfileScreenDarkPreview() {
+    ProductExplorerTheme(darkTheme = true) {
+        ProfileScreen(
+            developer = sampleDeveloper(),
+            skills = sampleSkills(),
+            projects = sampleProjects(),
+            onContactClick = {}
+        )
+    }
+}
