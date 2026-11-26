@@ -19,6 +19,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -41,6 +43,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     ProfileScreen(
                         developer = sampleDeveloper(),
+                        skills = sampleSkills(),
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -58,6 +61,11 @@ data class DeveloperUi(
     val availability: String
 )
 
+data class SkillUi(
+    val id: Int,
+    val name: String
+)
+
 fun sampleDeveloper(): DeveloperUi {
     return DeveloperUi(
         name = "Maxime BEAUJARD",
@@ -69,9 +77,20 @@ fun sampleDeveloper(): DeveloperUi {
     )
 }
 
+fun sampleSkills(): List<SkillUi> {
+    return listOf(
+        SkillUi(1, "Kotlin"),
+        SkillUi(2, "Jetpack Compose"),
+        SkillUi(3, "Git"),
+        SkillUi(4, "Material 3"),
+        SkillUi(5, "Java")
+    )
+}
+
 @Composable
 fun ProfileScreen(
     developer: DeveloperUi,
+    skills: List<SkillUi>,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -81,6 +100,9 @@ fun ProfileScreen(
     ) {
         item {
             ProfileHeader(developer = developer)
+        }
+        item {
+            SkillsSection(skills = skills)
         }
     }
 }
@@ -141,12 +163,47 @@ fun ProfileHeader(developer: DeveloperUi, modifier: Modifier = Modifier) {
     }
 }
 
+@Composable
+fun SkillChip(skill: SkillUi, modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier,
+        shape = MaterialTheme.shapes.extraLarge,
+        color = MaterialTheme.colorScheme.secondary,
+        contentColor = MaterialTheme.colorScheme.onPrimary
+    ) {
+        Text(
+            text = skill.name,
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
+            style = MaterialTheme.typography.labelLarge
+        )
+    }
+}
+
+@Composable
+fun SkillsSection(skills: List<SkillUi>, modifier: Modifier = Modifier) {
+    Column(modifier = modifier) {
+        Text(
+            text = "Compétences",
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+
+        LazyRow(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            items(items = skills, key = { skill -> skill.id }) { skill ->
+                SkillChip(skill = skill)
+            }
+        }
+    }
+}
+
 @Preview(showBackground = true, name = "Profil - Light Theme", heightDp = 1100)
 @Composable
 fun ProfileScreenLightPreview() {
     ProductExplorerTheme(darkTheme = false) {
         ProfileScreen(
-            developer = sampleDeveloper()
+            developer = sampleDeveloper(),
+            skills = sampleSkills()
         )
     }
 }
