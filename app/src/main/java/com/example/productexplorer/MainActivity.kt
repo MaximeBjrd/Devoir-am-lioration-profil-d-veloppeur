@@ -22,15 +22,23 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -47,6 +55,9 @@ class MainActivity : ComponentActivity() {
                         developer = sampleDeveloper(),
                         skills = sampleSkills(),
                         projects = sampleProjects(),
+                        onContactClick = {
+                            // Plus tard : contacter le développeur
+                        },
                         modifier = Modifier.padding(innerPadding)
                     )
                 }
@@ -125,6 +136,7 @@ fun ProfileScreen(
     developer: DeveloperUi,
     skills: List<SkillUi>,
     projects: List<ProjectUi>,
+    onContactClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -150,6 +162,9 @@ fun ProfileScreen(
             key = { project -> project.id }
         ) { project ->
             ProjectCard(project = project)
+        }
+        item {
+            ContactSection(developer = developer, onContactClick = onContactClick)
         }
     }
 }
@@ -276,6 +291,69 @@ fun ProjectCard(project: ProjectUi, modifier: Modifier = Modifier) {
     }
 }
 
+@Composable
+fun ContactField(label: String, value: String, icon: ImageVector, modifier: Modifier = Modifier) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = {},
+        readOnly = true,
+        label = { Text(text = label) },
+        leadingIcon = { Icon(imageVector = icon, contentDescription = null) },
+        modifier = modifier.fillMaxWidth()
+    )
+}
+
+@Composable
+fun ContactButton(onClick: () -> Unit, modifier: Modifier = Modifier) {
+    Button(onClick = onClick, modifier = modifier) {
+        Text(text = "Contacter")
+    }
+}
+
+@Composable
+fun ContactSection(developer: DeveloperUi, onContactClick: () -> Unit, modifier: Modifier = Modifier) {
+    Surface(
+        modifier = modifier.fillMaxWidth(),
+        shape = MaterialTheme.shapes.large,
+        tonalElevation = 2.dp
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "Contact",
+                style = MaterialTheme.typography.titleLarge,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+
+            ContactField(
+                label = "Email",
+                value = developer.email,
+                icon = Icons.Default.Email
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ContactField(
+                label = "Localisation",
+                value = developer.location,
+                icon = Icons.Default.LocationOn
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+
+            ContactField(
+                label = "Disponibilité",
+                value = developer.availability,
+                icon = Icons.Default.CheckCircle
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+
+            ContactButton(
+                onClick = onContactClick,
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+}
+
 @Preview(showBackground = true, name = "Profil - Light Theme", heightDp = 1100)
 @Composable
 fun ProfileScreenLightPreview() {
@@ -283,7 +361,8 @@ fun ProfileScreenLightPreview() {
         ProfileScreen(
             developer = sampleDeveloper(),
             skills = sampleSkills(),
-            projects = sampleProjects()
+            projects = sampleProjects(),
+            onContactClick = {}
         )
     }
 }
